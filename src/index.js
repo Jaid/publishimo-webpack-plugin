@@ -16,6 +16,7 @@ export default class {
       format: false,
       autoMain: true,
       banner: true,
+      productionOnly: true,
       ...options,
     }
     if (this.options.format === true) {
@@ -24,6 +25,10 @@ export default class {
   }
 
   apply(compiler) {
+    debugger
+    if (this.options.productionOnly && compiler.options.mode !== "production") {
+      return
+    }
     const publishimoConfig = {
       pkg: compiler.context,
       ...this.options.publishimoOptions,
