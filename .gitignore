@@ -21,5 +21,5 @@
 /test/*/dist/
 
 # IDEs
-# /.vscode/ # I'm using this!
+/.vscode/
 /.idea/
