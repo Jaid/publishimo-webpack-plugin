@@ -25,22 +25,49 @@ export default class {
   }
 
   apply(compiler) {
-    debugger
     if (this.options.productionOnly && compiler.options.mode !== "production") {
       return
     }
-    const publishimoConfig = {
-      pkg: compiler.context,
-      ...this.options.publishimoOptions,
-    }
-    const publishimoResult = publishimo(publishimoConfig)
+    let publishimoResult
+    compiler.hooks.compilation.tap("PublishimoWebpackPlugin", compilation => {
+      compilation.hooks.optimizeChunkAssets.tap("PublishimoWebpackPlugin", chunks => {
+        const publishimoConfig = {
+          pkg: compiler.context,
+          ...this.options.publishimoOptions,
+        }
+        if (this.options.autoMain) {
+          const chunkPath = path.join(compilation.outputOptions.path, compilation.chunks[0].files[0])
+          const pathRelation = path.relative(compilation.outputOptions.path, chunkPath)
+          if (publishimoConfig.config) {
+            publishimoConfig.config.main = pathRelation
+          } else {
+            publishimoConfig.config = {
+              main: pathRelation,
+            }
+          }
+        }
+        publishimoResult = publishimo(publishimoConfig)
+        if (this.options.banner) {
+          let banner
+          if (this.options.banner === true) {
+            banner = generateBanner(publishimoResult.generatedPkg)
+          } else if (typeof this.options.banner === "function") {
+            banner = this.options.banner(publishimoResult.generatedPkg)
+          } else if (typeof this.options.banner === "string") {
+            banner = this.options.banner
+          } else {
+            banner = "?"
+          }
+          for (const chunk of chunks) {
+            for (const file of chunk.files) {
+              compilation.assets[file] = new ConcatSource(formatBanner(banner), "\n", compilation.assets[file])
+            }
+          }
+        }
+      })
+    })
     compiler.hooks.emit.tap("PublishimoWebpackPlugin", compilation => {
       const pkg = publishimoResult.generatedPkg
-      if (this.options.autoMain) {
-        const chunkPath = path.join(compilation.outputOptions.path, compilation.chunks[0].files[0])
-        const pathRelation = path.relative(compilation.outputOptions.path, chunkPath)
-        pkg.main = pathRelation
-      }
       let fileContents
       if (Number.isInteger(this.options.format)) {
         fileContents = JSON.stringify(pkg, null, this.options.format)
@@ -52,27 +79,6 @@ export default class {
         size: () => fileContents.length,
       }
     })
-    if (this.options.banner) {
-      let banner
-      if (this.options.banner === true) {
-        banner = generateBanner(publishimoResult.generatedPkg)
-      } else if (typeof this.options.banner === "function") {
-        banner = this.options.banner(publishimoResult.generatedPkg)
-      } else if (typeof this.options.banner === "string") {
-        banner = this.options.banner
-      } else {
-        banner = "?"
-      }
-      compiler.hooks.compilation.tap("PublishimoWebpackPlugin", compilation => {
-        compilation.hooks.optimizeChunkAssets.tap("PublishimoWebpackPlugin", chunks => {
-          for (const chunk of chunks) {
-            for (const file of chunk.files) {
-              compilation.assets[file] = new ConcatSource(formatBanner(banner), "\n", compilation.assets[file])
-            }
-          }
-        })
-      })
-    }
   }
 
 }

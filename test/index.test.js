@@ -9,7 +9,7 @@ import PublishimoWebpackPlugin from "../src"
 
 const getWepbackConfig = name => ({
   target: "node",
-  mode: "development",
+  mode: "production",
   devtool: "inline-source-map",
   context: path.join(__dirname, name),
   entry: path.join(__dirname, name, "src"),
@@ -30,7 +30,7 @@ it("should run", async () => {
   const output = await loadJsonFile(path.join(__dirname, "basic", "dist", "package.json"))
   expect(output).toMatchObject({
     license: "MIT",
-    name: "publishimo-output",
+    name: "basic",
     version: "1.0.0",
   })
 })
@@ -53,6 +53,10 @@ it("should run with configuration", async () => {
         filename: "pkg.json",
         publishimoOptions: {
           pkg,
+          config: {
+            author: "Jaid",
+            github: true,
+          },
         },
       }),
     ],
@@ -60,5 +64,5 @@ it("should run with configuration", async () => {
   await pify(webpack)(webpackConfig)
   const output = await loadJsonFile(path.join(__dirname, "configured", "dist", "pkg.json"))
   expect(output).toMatchObject(pkg)
-  expect(output.main).toBe(path.join("out", "main.js"))
+  expect(output.main).toBe("out/main.js")
 })
