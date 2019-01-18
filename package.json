@@ -1,6 +1,6 @@
 {
   "name": "webpack-plugin-publishimo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "author": {
     "name": "Jaid",
@@ -25,6 +25,7 @@
     "publishimo": "2.6.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
     "@babel/register": "^7.0.0",
     "babel-jest": "24.0.0-alpha.12",
@@ -36,13 +37,15 @@
     "jest": "24.0.0-alpha.12",
     "load-json-file": "^5.1.0",
     "pify": "^4.0.1",
+    "rimraf": "^2.6.3",
     "webpack": "^4.28.4"
   },
   "scripts": {
-    "build:prod": "cross-env NODE_ENV=production cross-env babel",
-    "build:dev": "cross-env babel",
+    "build:prod": "rimraf dist && cross-env NODE_ENV=production cross-env babel src --out-dir dist",
+    "build:dev": "cross-env babel src --out-dir dist",
     "test:dev": "jest",
     "test:debug": "cross-env node --inspect=9229 node_modules/jest/bin/jest.js --runInBand",
-    "prepare": "jest --clearCache"
+    "prepare": "jest --clearCache",
+    "prepublishOnly": "npm run build:prod"
   }
 }
