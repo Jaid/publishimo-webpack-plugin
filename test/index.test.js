@@ -7,6 +7,8 @@ import CleanWebpackPlugin from "clean-webpack-plugin"
 
 import PublishimoWebpackPlugin from "../src"
 
+jest.setTimeout(60 * 1000)
+
 const getWepbackConfig = name => ({
   target: "node",
   mode: "production",

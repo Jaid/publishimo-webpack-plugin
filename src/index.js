@@ -7,8 +7,6 @@ import {isString} from "lodash"
 import generateBanner from "./generateBanner"
 import formatBanner from "./formatBanner"
 
-jest.setTimeout(60 * 1000)
-
 export default class {
 
   constructor(options) {
