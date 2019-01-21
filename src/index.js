@@ -6,6 +6,8 @@ import {ConcatSource} from "webpack-sources"
 import generateBanner from "./generateBanner"
 import formatBanner from "./formatBanner"
 
+jest.setTimeout(60 * 1000)
+
 export default class {
 
   constructor(options) {
@@ -30,7 +32,7 @@ export default class {
     }
     let publishimoResult
     compiler.hooks.compilation.tap("PublishimoWebpackPlugin", compilation => {
-      compilation.hooks.optimizeChunkAssets.tap("PublishimoWebpackPlugin", chunks => {
+      compilation.hooks.optimizeChunkAssets.tapPromise("PublishimoWebpackPlugin", async chunks => {
         const publishimoConfig = {
           pkg: compiler.context,
           ...this.options.publishimoOptions,
@@ -38,15 +40,9 @@ export default class {
         if (this.options.autoMain) {
           const chunkPath = path.join(compilation.outputOptions.path, compilation.chunks[0].files[0])
           const pathRelation = path.relative(compilation.outputOptions.path, chunkPath)
-          if (publishimoConfig.config) {
-            publishimoConfig.config.main = pathRelation
-          } else {
-            publishimoConfig.config = {
-              main: pathRelation,
-            }
-          }
+          publishimoConfig.main = pathRelation
         }
-        publishimoResult = publishimo(publishimoConfig)
+        publishimoResult = await publishimo(publishimoConfig)
         if (this.options.banner) {
           let banner
           if (this.options.banner === true) {
