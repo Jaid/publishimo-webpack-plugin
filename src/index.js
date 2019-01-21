@@ -20,7 +20,6 @@ export default class {
       autoMain: true,
       banner: true,
       productionOnly: true,
-      indexField: "main",
       ...options,
     }
     if (this.options.format === true) {
