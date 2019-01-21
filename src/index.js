@@ -2,6 +2,7 @@ import path from "path"
 
 import publishimo from "publishimo"
 import {ConcatSource} from "webpack-sources"
+import {isString} from "lodash"
 
 import generateBanner from "./generateBanner"
 import formatBanner from "./formatBanner"
@@ -19,6 +20,7 @@ export default class {
       autoMain: true,
       banner: true,
       productionOnly: true,
+      indexField: "main",
       ...options,
     }
     if (this.options.format === true) {
@@ -40,7 +42,8 @@ export default class {
         if (this.options.autoMain) {
           const chunkPath = path.join(compilation.outputOptions.path, compilation.chunks[0].files[0])
           const pathRelation = path.relative(compilation.outputOptions.path, chunkPath)
-          publishimoConfig.main = pathRelation
+          const fieldKey = isString(this.options.autoMain) ? this.options.autoMain : "main"
+          publishimoConfig[fieldKey] = pathRelation
         }
         publishimoResult = await publishimo(publishimoConfig)
         if (this.options.banner) {
