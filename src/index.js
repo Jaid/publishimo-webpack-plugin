@@ -3,9 +3,13 @@ import path from "path"
 import publishimo from "publishimo"
 import {ConcatSource} from "webpack-sources"
 import {isString} from "lodash"
+import {AsyncParallelHook} from "tabpable"
 
 import generateBanner from "./generateBanner"
 import formatBanner from "./formatBanner"
+
+const webpackId = "PublishimoWebpackPlugin"
+const pkgHook = "publishimoGeneratedPkg"
 
 export default class {
 
@@ -29,9 +33,13 @@ export default class {
     if (this.options.productionOnly && compiler.options.mode !== "production") {
       return
     }
+    if (compiler.hooks[pkgHook]) {
+      throw new Error(`Webpack hook compiler.hooks.${pkgHook} is already registered`)
+    }
+    compiler.hooks[pkgHook] = new AsyncParallelHook(["publishimoResult"])
     let publishimoResult
-    compiler.hooks.compilation.tap("PublishimoWebpackPlugin", compilation => {
-      compilation.hooks.optimizeChunkAssets.tapPromise("PublishimoWebpackPlugin", async chunks => {
+    compiler.hooks.compilation.tap(webpackId, compilation => {
+      compilation.hooks.optimizeChunkAssets.tapPromise(webpackId, async chunks => {
         const publishimoConfig = {
           pkg: compiler.context,
           ...this.options.publishimoOptions,
@@ -43,6 +51,7 @@ export default class {
           publishimoConfig[fieldKey] = pathRelation
         }
         publishimoResult = await publishimo(publishimoConfig)
+        compiler.hooks[pkgHook].call(publishimoResult)
         if (this.options.banner) {
           let banner
           if (this.options.banner === true) {
@@ -62,7 +71,7 @@ export default class {
         }
       })
     })
-    compiler.hooks.emit.tap("PublishimoWebpackPlugin", compilation => {
+    compiler.hooks.emit.tap(webpackId, compilation => {
       const pkg = publishimoResult.generatedPkg
       let fileContents
       if (Number.isInteger(this.options.format)) {
