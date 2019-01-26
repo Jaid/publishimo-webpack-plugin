@@ -51,7 +51,7 @@ export default class {
           publishimoConfig[fieldKey] = pathRelation
         }
         publishimoResult = await publishimo(publishimoConfig)
-        compiler.hooks[pkgHook].call(publishimoResult)
+        compiler.hooks[pkgHook].promise(publishimoResult)
         if (this.options.banner) {
           let banner
           if (this.options.banner === true) {
