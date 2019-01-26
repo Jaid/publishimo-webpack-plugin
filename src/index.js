@@ -3,7 +3,7 @@ import path from "path"
 import publishimo from "publishimo"
 import {ConcatSource} from "webpack-sources"
 import {isString} from "lodash"
-import {AsyncParallelHook} from "tabpable"
+import {AsyncParallelHook} from "tapable"
 
 import generateBanner from "./generateBanner"
 import formatBanner from "./formatBanner"
