@@ -49,9 +49,7 @@ export default class {
         const mainPath = path.relative(compilation.outputOptions.path, chunkPath)
         if (this.options.autoMain) {
           const fieldKey = isString(this.options.autoMain) ? this.options.autoMain : "main"
-          if (mainPath !== "index.js") { // "main": "index.js" is not needed, says https://docs.npmjs.com/creating-a-package-json-file#default-values-extracted-from-the-current-directory
-            publishimoConfig[fieldKey] = mainPath
-          }
+          publishimoConfig[fieldKey] = mainPath
         }
         if (this.options.autoTypes) {
           publishimoConfig[types] = mainPath
