@@ -52,7 +52,7 @@ export default class {
           publishimoConfig[fieldKey] = mainPath
         }
         if (this.options.autoTypes) {
-          publishimoConfig[types] = mainPath
+          publishimoConfig.types = mainPath
         }
         publishimoResult = await publishimo(publishimoConfig)
         compiler.hooks[pkgHook].promise(publishimoResult)
