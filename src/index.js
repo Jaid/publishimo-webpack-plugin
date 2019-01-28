@@ -20,6 +20,7 @@ export default class {
       publishimoOptions: {},
       format: false,
       autoMain: true,
+      autoTypes: false,
       banner: true,
       productionOnly: true,
       ...options,
@@ -44,11 +45,16 @@ export default class {
           pkg: compiler.context,
           ...this.options.publishimoOptions,
         }
+        const chunkPath = path.join(compilation.outputOptions.path, compilation.chunks[0].files[0])
+        const mainPath = path.relative(compilation.outputOptions.path, chunkPath)
         if (this.options.autoMain) {
-          const chunkPath = path.join(compilation.outputOptions.path, compilation.chunks[0].files[0])
-          const pathRelation = path.relative(compilation.outputOptions.path, chunkPath)
           const fieldKey = isString(this.options.autoMain) ? this.options.autoMain : "main"
-          publishimoConfig[fieldKey] = pathRelation
+          if (mainPath !== "index.js") { // "main": "index.js" is not needed, says https://docs.npmjs.com/creating-a-package-json-file#default-values-extracted-from-the-current-directory
+            publishimoConfig[fieldKey] = mainPath
+          }
+        }
+        if (this.options.autoTypes) {
+          publishimoConfig[types] = mainPath
         }
         publishimoResult = await publishimo(publishimoConfig)
         compiler.hooks[pkgHook].promise(publishimoResult)
