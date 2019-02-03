@@ -21,7 +21,7 @@ export default pkg => {
   }
   // License
   if (pkg.license) {
-    lines.push(`Licensed under ${pkg.license}`)
+    lines.push(`@license ${pkg.license}`)
   }
   // Homepage
   if (pkg.homepage) {
