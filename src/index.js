@@ -22,6 +22,7 @@ export default class {
       autoMain: true,
       autoTypes: false,
       banner: true,
+      unicodeCopyright: true,
       productionOnly: true,
       ...options,
     }
@@ -59,7 +60,7 @@ export default class {
         if (this.options.banner) {
           let banner
           if (this.options.banner === true) {
-            banner = generateBanner(publishimoResult.generatedPkg)
+            banner = generateBanner(publishimoResult.generatedPkg, options)
           } else if (typeof this.options.banner === "function") {
             banner = this.options.banner(publishimoResult.generatedPkg)
           } else if (typeof this.options.banner === "string") {

@@ -1,8 +1,7 @@
 import stringifyAuthor from "stringify-author"
 
-const copyrightString = "Copyright ©"
-
-export default pkg => {
+export default (pkg, options = {}) => {
+  const copyrightPrefix = `Copyright ${options.unicodeCopyright ? "©" : "(c)"}`
   const lines = []
   // Name and version
   if (pkg.version) {
@@ -12,7 +11,7 @@ export default pkg => {
   }
   // Copyright
   const year = (new Date).getFullYear()
-  const prefix = `${copyrightString} ${year}`
+  const prefix = `${copyrightPrefix} ${year}`
   if (typeof pkg.author === "object") {
     const author = stringifyAuthor(pkg.author)
     lines.push(`${prefix}, ${author}`)
