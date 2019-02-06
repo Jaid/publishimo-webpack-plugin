@@ -1,6 +1,37 @@
 language: node_js
 node_js: [node, lts/*]
-os: [linux, osx] # Excluded Windows (currently doesn't work with the env variable below)
-env:
-  global:
-    secure: k6mDWLaJTjlQnHxXLKoRF5OJB2+UlLOWBcuxOUzCzmrYqQxOcqGsrpQGTlkxoWVf2LLpv/Uze6PDFHOE9/mDwmxbpGxkHIbsPZE9K4rXazS8QsUP0KWMgY1v0vKJAHOrJFC8UvCMdVWiVsYJ/r001CWlu1hSokahFAT4JRMMqaDbc8Iz3WDB+3bOEk2d0/gaWCbbyBJee9TcfYy76XGPHvBmlQ4v5Iz/gpNGai078exDiC19EIPlphfClNIFRSSDJlfifa8IxCUPflGL2908GYpXXAm6wQqP5YvvBV+nIqVM5ZVy3YtqNGUkK04RHB59nhRffU5EATE/+17o4ryPAZZN9wKMMA6NKfnnqJZq4Feu5wnONJwruZtrEaleFIHGd97YRkf4BZpXHnp/7CeDg9Dw54GFTbo+TLtLez3hWeAcw32mi4uYa2YWxRtAzrvoG6EmS1w1oGPrggXZZg5u7zubgXdqsuJ4IIaCRGDhG8NXnMfwj+QfqnT85CV3UF7v4bDbUNcnniY+Aeme2EyCcsfawS1yUnoD/+OR/kCByp7h76zX3NV1GLTOEc/IAmWmcEL7VZ1niu6m3y6jxkIabd4r0pUu8/4cko79PDetr4z+jP8ckZEa7rLrMYNAgH+Quv0eDLuz2ai/Pw5Z2cDp1o9A6Sq52UgmX7wf/7Dwz80=
+os: [linux, osx] # Windows doesn't work currently, I should try again in May 2019 (If I didn't, remind me please!)
+cache:
+  npm: true
+jobs:
+  include:
+    - stage: Deploy
+      before_deploy:
+        - npm run build:prod
+        - export PKG_NAME=$(node -e "console.log(require('./dist/package').name)")
+        - export PKG_VERSION=$(node -e "console.log(require('./dist/package').version)")
+        - cd dist
+        - zip -9 --recurse-paths ../${PKG_NAME}_v$PKG_VERSION.zip **
+        - zip -9 --recurse-paths ../${PKG_NAME}_v${PKG_VERSION}_min.zip ** --exclude \*.d.ts --exclude readme.* --exclude \*.map
+        - cd ..
+      deploy:
+        - provider: pages
+          local_dir: dist-jsdoc/$PKG_NAME/$PKG_VERSION
+          fqdn: $PKG_NAME.jaid.codes
+          skip_cleanup: true
+          github_token: $GITHUB_TOKEN # Permissions: public_repo, repo:status, repo_deployment
+        - provider: releases
+          file_glob: true
+          file:
+            - dist/package.json
+            - dist/license.*
+            - dist/*.d.ts
+            - "*.zip"
+          skip_cleanup: true
+          name: $PKG_NAME $PKG_VERSION
+          api_key: $GITHUB_TOKEN # Permissions: public_repo, repo:status, repo_deployment
+          on: { tags: true }
+        - provider: script
+          script: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc && npm publish dist
+          skip_cleanup: true
+          on: { tags: true }
