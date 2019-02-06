@@ -33,18 +33,18 @@
     "@babel/core": "^7.2.2",
     "@babel/node": "^7.2.2",
     "@babel/register": "^7.0.0",
-    "babel-jest": "24.0.0",
+    "babel-jest": "24.1.0",
     "babel-preset-jaid": "2.9.0",
     "clean-webpack-plugin": "^1.0.1",
     "cross-env": "^5.2.0",
     "eslint": "^5.13.0",
     "eslint-config-jaid": "1.11.0",
-    "jest": "24.0.0",
+    "jest": "24.1.0",
     "load-json-file": "^5.1.0",
     "opn-cli": "^4.0.0",
     "pify": "^4.0.1",
     "rimraf": "^2.6.3",
-    "webpack": "^4.29.0"
+    "webpack": "^4.29.1"
   },
   "scripts": {
     "build:prod": "rimraf dist && cross-env NODE_ENV=production babel src --out-dir dist",
