@@ -60,7 +60,7 @@ export default class {
         if (this.options.banner) {
           let banner
           if (this.options.banner === true) {
-            banner = generateBanner(publishimoResult.generatedPkg, options)
+            banner = generateBanner(publishimoResult.generatedPkg, this.options)
           } else if (typeof this.options.banner === "function") {
             banner = this.options.banner(publishimoResult.generatedPkg)
           } else if (typeof this.options.banner === "string") {
