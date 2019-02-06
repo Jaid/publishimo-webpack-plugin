@@ -5,7 +5,8 @@ import pify from "pify"
 import loadJsonFile from "load-json-file"
 import CleanWebpackPlugin from "clean-webpack-plugin"
 
-import PublishimoWebpackPlugin from "../src"
+const indexModule = (process.env.MAIN ? path.resolve(process.env.MAIN) : path.join(__dirname, "..", "src")) |> require
+const {default: PublishimoWebpackPlugin} = indexModule
 
 jest.setTimeout(60 * 1000)
 
@@ -65,6 +66,8 @@ it("should run with configuration", async () => {
   }
   await pify(webpack)(webpackConfig)
   const output = await loadJsonFile(path.join(__dirname, "configured", "dist", "pkg.json"))
+  console.log(pkg)
+  console.log(output)
   expect(output).toMatchObject(pkg)
   expect(output.main).toBe("out/main.js")
 })
