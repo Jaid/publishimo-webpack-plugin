@@ -22,7 +22,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
-    "publishimo": "^4.0.0",
+    "publishimo": "^4.0.1",
     "stringify-author": "^0.1.3"
   },
   "devDependencies": {
