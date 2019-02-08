@@ -1,15 +1,7 @@
 {
-  "name": "publishimo-webpack-plugin",
   "version": "1.10.0",
-  "license": "MIT",
-  "author": {
-    "name": "Jaid",
-    "url": "https://github.com/jaid",
-    "email": "jaid.jsx@gmail.com"
-  },
-  "repository": "https://github.com/Jaid/publishimo-webpack-plugin",
-  "description": "Webpack plugin for publishimo",
-  "main": "dist/index.js",
+  "private": true,
+  "author": "Jaid <jaid.jsx@gmail.com> (https://github.com/Jaid)",
   "babel": {
     "presets": [
       "jaid"
