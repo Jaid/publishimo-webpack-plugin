@@ -54,6 +54,7 @@ it("should run with configuration", async () => {
       new CleanWebpackPlugin,
       new PublishimoWebpackPlugin({
         pkg,
+        debugFolder: path.join(__dirname, "configured", "dist", "debug"),
         filename: "pkg.json",
         config: {
           author: "Jaid",
@@ -64,8 +65,6 @@ it("should run with configuration", async () => {
   }
   await pify(webpack)(webpackConfig)
   const output = await loadJsonFile(path.join(__dirname, "configured", "dist", "pkg.json"))
-  console.log(pkg)
-  console.log(output)
   expect(output).toMatchObject(pkg)
   expect(output.main).toBe("out/main.js")
 })

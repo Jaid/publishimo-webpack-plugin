@@ -4,6 +4,8 @@ import publishimo from "publishimo"
 import {ConcatSource} from "webpack-sources"
 import {isString} from "lodash"
 import {AsyncParallelHook} from "tapable"
+import fss from "@absolunet/fss"
+import json5 from "json5"
 
 import generateBanner from "./generateBanner"
 import formatBanner from "./formatBanner"
@@ -23,10 +25,24 @@ export default class {
       banner: true,
       unicodeCopyright: true,
       productionOnly: true,
+      debugFolder: null,
+      json5: false,
       ...options,
     }
     if (this.options.format === true) {
       this.options.format = 2
+    }
+  }
+
+  outputDebugFile(filename, data) {
+    if (!this.options.debugFolder) {
+      return
+    }
+    const outputPath = path.join(this.options.debugFolder, filename)
+    if (typeof data === "string") {
+      fss.outputFile(outputPath, data)
+    } else {
+      fss.outputJson5(outputPath, data, {format: 2})
     }
   }
 
@@ -55,34 +71,33 @@ export default class {
           publishimoConfig.types = mainPath
         }
         publishimoResult = await publishimo(publishimoConfig)
+        this.outputDebugFile("options.json5", this.options)
+        this.outputDebugFile("publishimoResult.json5", publishimoResult)
         compiler.hooks[pkgHook].promise(publishimoResult)
         if (this.options.banner) {
-          let banner
-          if (this.options.banner === true) {
-            banner = generateBanner(publishimoResult.generatedPkg, this.options)
-          } else if (typeof this.options.banner === "function") {
-            banner = this.options.banner(publishimoResult.generatedPkg)
-          } else if (typeof this.options.banner === "string") {
-            banner = this.options.banner
-          } else {
-            banner = "?"
+          const banner = do {
+            if (this.options.banner === true) {
+              generateBanner(publishimoResult.generatedPkg, this.options)
+            } else if (typeof this.options.banner === "function") {
+              this.options.banner(publishimoResult.generatedPkg)
+            } else if (typeof this.options.banner === "string") {
+              this.options.banner
+            } else {
+              "?"
+            }
           }
+          const finalBanner = formatBanner(banner)
+          this.outputDebugFile("banner.js", finalBanner)
           for (const chunk of chunks) {
             for (const file of chunk.files) {
-              compilation.assets[file] = new ConcatSource(formatBanner(banner), "\n", compilation.assets[file])
+              compilation.assets[file] = new ConcatSource(finalBanner, "\n", compilation.assets[file])
             }
           }
         }
       })
     })
     compiler.hooks.emit.tap(webpackId, compilation => {
-      const pkg = publishimoResult.generatedPkg
-      let fileContents
-      if (Number.isInteger(this.options.format)) {
-        fileContents = JSON.stringify(pkg, null, this.options.format)
-      } else {
-        fileContents = JSON.stringify(pkg)
-      }
+      const fileContents = (this.options.json5 ? json5 : JSON).stringify(publishimoResult.generatedPkg, null, this.options.format || 0)
       compilation.assets[this.options.filename] = {
         source: () => fileContents,
         size: () => fileContents.length,
