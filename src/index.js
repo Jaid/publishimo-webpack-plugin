@@ -1,3 +1,5 @@
+/** @module publishimo-webpack-plugin */
+
 import path from "path"
 
 import publishimo from "publishimo"
@@ -13,6 +15,9 @@ import formatBanner from "./formatBanner"
 const webpackId = "PublishimoWebpackPlugin"
 const pkgHook = "publishimoGeneratedPkg"
 
+/**
+ * @class default
+ */
 export default class {
 
   constructor(options) {
