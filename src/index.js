@@ -17,7 +17,6 @@ export default class {
     this.options = {
       publishimo,
       filename: "package.json",
-      publishimoOptions: {},
       format: false,
       autoMain: true,
       autoTypes: false,
@@ -44,7 +43,7 @@ export default class {
       compilation.hooks.optimizeChunkAssets.tapPromise(webpackId, async chunks => {
         const publishimoConfig = {
           pkg: compiler.context,
-          ...this.options.publishimoOptions,
+          ...this.options,
         }
         const chunkPath = path.join(compilation.outputOptions.path, compilation.chunks[0].files[0])
         const mainPath = path.relative(compilation.outputOptions.path, chunkPath)
