@@ -18,6 +18,7 @@
 # Generated or temporary content
 /build/
 /dist/
+dist-jsdoc/
 /test/*/dist/
 
 # IDEs

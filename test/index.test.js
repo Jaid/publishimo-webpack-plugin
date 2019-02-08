@@ -53,13 +53,11 @@ it("should run with configuration", async () => {
     plugins: [
       new CleanWebpackPlugin,
       new PublishimoWebpackPlugin({
+        pkg,
         filename: "pkg.json",
-        publishimoOptions: {
-          pkg,
-          config: {
-            author: "Jaid",
-            github: true,
-          },
+        config: {
+          author: "Jaid",
+          github: true,
         },
       }),
     ],

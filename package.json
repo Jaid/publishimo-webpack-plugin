@@ -26,13 +26,13 @@
     "stringify-author": "^0.1.3"
   },
   "devDependencies": {
-    "babel-jest": "24.1.0",
-    "babel-preset-jaid": "2.10.0",
+    "babel-jest": "^24.1.0",
+    "babel-preset-jaid": "^2.10.0",
     "clean-webpack-plugin": "^1.0.1",
     "cross-env": "^5.2.0",
     "eslint": "^5.13.0",
-    "eslint-config-jaid": "1.11.0",
-    "jest": "24.1.0",
+    "eslint-config-jaid": "^1.11.0",
+    "jest": "^24.1.0",
     "load-json-file": "^5.1.0",
     "opn-cli": "^4.0.0",
     "pify": "^4.0.1",
