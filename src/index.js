@@ -42,7 +42,7 @@ export default class {
     if (typeof data === "string") {
       fss.outputFile(outputPath, data)
     } else {
-      fss.outputJson5(outputPath, data, {format: 2})
+      fss.outputJson5(outputPath, data, {space: 2})
     }
   }
 
