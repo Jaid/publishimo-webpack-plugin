@@ -16,10 +16,29 @@ const webpackId = "PublishimoWebpackPlugin"
 const pkgHook = "publishimoGeneratedPkg"
 
 /**
- * @class default
+ * @typedef pluginOptions
+ * @type {object}
+ * @property {function} [publishimo] Publishimo instance, just in case you want to override the required publishimo package with a newer or manually patched version
+ * @property {string} [filename="package.json"] Output file name
+ * @property {boolean|number} [format=false] If true, formats JSON output and indents for readability. If a number is given, it will be the indent width in spaces. If `true`, the indent with is `2`.
+ * @property {boolean} [autoMain=true] If true, automatically set `main` field. If a string is given, it will be the key instead of `"main"`.
+ * @property {boolean} [autoTypes=false] If true, automatically set `types` field.
+ * @property {boolean} [banner=true] If true, add license banner to ouput script.
+ * @property {boolean} [unicodeCopyright=true] If true, uses `©` instead of `(c)` in banner.
+ * @property {boolean} [productionOnly=true] If true, only applies changes and emits files in Webpack mode `production`.
+ * @property {string} [debugFolder=null] Directory where debug info files get written to.
+ * @property {boolean} [json5=false] If true, package output will be written with `json5.stringify` instead of `JSON.stringify`.
+ */
+
+/**
+ * @class
  */
 export default class {
 
+  /**
+   * @constructor
+   * @param {pluginOptions} [options] Plugin options
+   */
   constructor(options) {
     this.options = {
       publishimo,
