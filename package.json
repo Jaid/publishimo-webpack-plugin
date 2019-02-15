@@ -16,24 +16,24 @@
   "dependencies": {
     "@absolunet/fss": "^1.4.0",
     "json5": "^2.1.0",
-    "publishimo": "^4.1.0",
+    "publishimo": "^4.1.1",
     "stringify-author": "^0.1.3"
   },
   "devDependencies": {
     "babel-jest": "^24.1.0",
-    "babel-preset-jaid": "^2.10.0",
+    "babel-preset-jaid": "^2.11.0",
     "clean-webpack-plugin": "^1.0.1",
     "cross-env": "^5.2.0",
     "eslint": "^5.13.0",
-    "eslint-config-jaid": "^1.11.0",
+    "eslint-config-jaid": "^1.11.1",
     "jest": "^24.1.0",
-    "load-json-file": "^5.1.0",
+    "load-json-file": "^5.2.0",
     "opn-cli": "^4.0.0",
     "pify": "^4.0.1",
     "rimraf": "^2.6.3",
     "webpack": "^4.29.3",
     "webpack-cli": "^3.2.3",
-    "webpack-config-jaid": "^1.27.0"
+    "webpack-config-jaid": "^2.4.0"
   },
   "scripts": {
     "clean": "rimraf dist dist-jsdoc",
