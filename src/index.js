@@ -75,7 +75,7 @@ export default class {
         if (this.options.autoTypes) {
           publishimoConfig.types = mainPath
         }
-        publishimoResult = await publishimo(publishimoConfig)
+        publishimoResult = await this.options.publishimo(publishimoConfig)
         this.outputDebugFile("options.json5", this.options)
         this.outputDebugFile("publishimoResult.json5", publishimoResult)
         compiler.hooks[pkgHook].promise(publishimoResult)
