@@ -11,10 +11,15 @@
     "extends": "jaid"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coverageDirectory": "dist/jest/coverage",
+    "collectCoverageFrom": [
+      "src/**"
+    ]
   },
   "dependencies": {
     "@absolunet/fss": "^1.4.0",
+    "@babel/runtime": "^7.3.1",
     "json5": "^2.1.0",
     "publishimo": "^4.1.1",
     "stringify-author": "^0.1.3"
@@ -36,12 +41,16 @@
     "webpack-config-jaid": "^3.1.0"
   },
   "scripts": {
-    "clean": "rimraf dist dist-jsdoc",
+    "clean": "rimraf dist/ test/**/dist/",
+    "babel:prod": "rimraf dist/src-transpiled/production && cross-env NODE_ENV=production babel --out-dir dist/src-transpiled/production --source-maps true src",
+    "babel:dev": "rimraf dist/src-transpiled/development && babel --out-dir dist/src-transpiled/development src",
+    "babel:test": "rimraf dist/src-transpiled/test && cross-env NODE_ENV=test babel --out-dir dist/src-transpiled/test src",
     "build:prod": "cross-env NODE_ENV=production webpack",
     "build:dev": "webpack",
-    "test": "jest && npm run build:prod && cross-env MAIN=dist/package/production jest",
-    "test:dev": "npm run build:dev && jest",
-    "test:debug": "node --inspect=9229 node_modules/jest/bin/jest.js --runInBand",
-    "release": "npm test && cross-env git tag v$npm_package_version && git push --tags && cross-env opn https://github.com/$npm_package_author_name/$(basename $PWD)/releases/new?tag=v$npm_package_version"
+    "test": "npm run build:prod && cross-env NODE_ENV=production MAIN=dist/package/production jest --runInBand",
+    "test:coverage": "npm run test:dev -- --coverage --json --outputFile=dist/jest/stats.json",
+    "test:dev": "cross-env NODE_ENV=test jest --runInBand",
+    "test:debug": "cross-env DEBUG=\"$(basename $PWD),$(basename $PWD):*\" NODE_ENV=test node --inspect=9229 node_modules/jest/bin/jest.js --runInBand",
+    "release": "npm run clean && npm test && cross-env git tag v$npm_package_version && git push --tags && cross-env opn https://github.com/$npm_package_author_name/$(basename $PWD)/releases/new?tag=v$npm_package_version"
   }
 }

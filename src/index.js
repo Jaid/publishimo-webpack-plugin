@@ -94,6 +94,7 @@ export default class {
         if (this.options.autoTypes) {
           publishimoConfig.types = mainPath
         }
+        debugger
         publishimoResult = await this.options.publishimo(publishimoConfig)
         this.outputDebugFile("options.json5", this.options)
         this.outputDebugFile("publishimoResult.json5", publishimoResult)
