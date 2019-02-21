@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "babel-jest": "^24.1.0",
-    "babel-preset-jaid": "^4.2.0",
+    "babel-preset-jaid": "^4.2.1",
     "clean-webpack-plugin": "^1.0.1",
     "cross-env": "^5.2.0",
     "eslint": "^5.14.1",
