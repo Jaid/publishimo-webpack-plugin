@@ -2,24 +2,28 @@
 .env
 
 # Node packages
-/node_modules/
-
-# Yarn
-/yarn.lock
-/yarn-error.log
+node_modules
 
 # npm
-/npm-debug.log
-/npm-debug.log.*
+package-lock.json
+!/package-lock.json
+npm-debug.log
+npm-debug.log.*
+.npmrc
 
 # pnpm
-/shrinkwrap.yaml
+shrinkwrap.yaml
+!/shrinkwrap.yaml
+pnpm-debug.log
+
+# Yarn
+yarn.lock
+!/yarn.lock
+yarn-error.log
 
 # Generated or temporary content
-/build/
-/dist/
-dist-jsdoc/
-/test/*/dist/
+dist
+temp
 
 # IDEs
 /.vscode/
