@@ -94,7 +94,13 @@ export default class {
         if (this.options.autoTypes) {
           publishimoConfig.types = mainPath
         }
-        debugger
+        if (compilation.options.target !== "node") { // Don't include dependencies in package.json if export target is not a Node module
+          publishimoConfig.excludeFields = [
+            "dependencies",
+            "peerDependencies",
+            "optionalDependencies",
+          ]
+        }
         publishimoResult = await this.options.publishimo(publishimoConfig)
         this.outputDebugFile("options.json5", this.options)
         this.outputDebugFile("publishimoResult.json5", publishimoResult)
