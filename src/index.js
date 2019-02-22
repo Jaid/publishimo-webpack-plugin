@@ -28,6 +28,9 @@ const pkgHook = "publishimoGeneratedPkg"
  * @property {boolean} [productionOnly=true] If true, only applies changes and emits files in Webpack mode `production`.
  * @property {string} [debugFolder=null] Directory where debug info files get written to.
  * @property {boolean} [json5=false] If true, package output will be written with `json5.stringify` instead of `JSON.stringify`.
+ * @property {boolean} [autoExclude=false] If `true`, unneeded fields will be guessed and automatically excluded from output package.
+ * @property {string[]} [includeFields=[]] Field names that should forcefully be forwarded from `options.pkg` to generated pkg. For example, use `includeFields: ["babel"]` to include your Babel config in your output package.
+ * @property {string[]} [excludeFields=[]] Fields names that are never written to generated pkg.
  */
 
 /**
@@ -50,7 +53,10 @@ export default class {
       unicodeCopyright: true,
       productionOnly: true,
       debugFolder: null,
+      incudeFields: [],
+      excludeFields: [],
       json5: false,
+      autoExclude: false,
       ...options,
     }
     if (this.options.format === true) {
@@ -94,8 +100,9 @@ export default class {
         if (this.options.autoTypes) {
           publishimoConfig.types = mainPath
         }
-        if (compilation.options.target !== "node") { // Don't include dependencies in package.json if export target is not a Node module
+        if (this.options.autoExclude && compilation.options.target !== "node") { // Don't include dependencies in package.json if export target is not a Node module
           publishimoConfig.excludeFields = [
+            ...publishimoConfig.excludeFields,
             "dependencies",
             "peerDependencies",
             "optionalDependencies",
