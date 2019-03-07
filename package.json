@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@absolunet/fss": "^1.4.0",
-    "@babel/runtime": "^7.3.1",
+    "@babel/runtime": "^7.3.4",
     "json5": "^2.1.0",
     "publishimo": "^5.0.0",
     "stringify-author": "^0.1.3"
