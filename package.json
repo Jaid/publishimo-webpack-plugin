@@ -29,7 +29,7 @@
     "babel-preset-jaid": "^4.3.0",
     "clean-webpack-plugin": "^1.0.1",
     "cross-env": "^5.2.0",
-    "eslint": "^5.14.1",
+    "eslint": "^5.15.1",
     "eslint-config-jaid": "^1.11.1",
     "jest": "^24.1.0",
     "load-json-file": "^5.2.0",
