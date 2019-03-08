@@ -1,0 +1,236 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>JSDoc: index.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link href="https://fonts.googleapis.com/css?family=Muli:100,400,700|Oswald:300|Inconsolata,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+</head>
+
+<body>
+    <div id="stickyNavbarOverlay"></div>
+    <div class="top-navbar">
+        <div class="container">
+            <nav class="navbar" role="navigation" aria-label="main navigation">
+                <div class="navbar-brand">
+                    
+                    
+                        <h1 class="navbar-item">Documentation</h1>
+                    
+                    <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                    </a>
+                </div>
+                
+            </nav>
+        </div>
+    </div>
+    <div class="container">
+        <div class="columns">
+            <div class="column is-3" id="sidebarNav">
+                <div class="sidebar">
+                    <nav>
+                        <h2><a href="index.html">Home</a></h2><div class="category"><h3>Modules</h3><ul><li><a href="module-publishimo-webpack-plugin.html">publishimo-webpack-plugin</a></li></ul><h3>Classes</h3><ul><li><a href="module-publishimo-webpack-plugin-_default.html">_default</a></li></ul></div>
+                    </nav>
+                </div>
+            </div>
+            <div class="column is-9-desktop">
+                <div class="content" id="main-content-wrapper">
+                    <header class="page-title">
+                        <p>Source</p>
+                        <h1>index.js</h1>
+                    </header>
+                    
+                    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** @module publishimo-webpack-plugin */
+
+import path from "path"
+
+import publishimo from "publishimo"
+import {ConcatSource} from "webpack-sources"
+import {isString} from "lodash"
+import {AsyncParallelHook} from "tapable"
+import fss from "@absolunet/fss"
+import json5 from "json5"
+
+import generateBanner from "./generateBanner"
+import formatBanner from "./formatBanner"
+
+const webpackId = "PublishimoWebpackPlugin"
+const pkgHook = "publishimoGeneratedPkg"
+
+/**
+ * @typedef pluginOptions
+ * @type {object}
+ * @property {function} [publishimo] Publishimo instance, just in case you want to override the required publishimo package with a newer or manually patched version
+ * @property {string} [filename="package.json"] Output file name
+ * @property {boolean|number} [format=false] If true, formats JSON output and indents for readability. If a number is given, it will be the indent width in spaces. If `true`, the indent with is `2`.
+ * @property {boolean} [autoMain=true] If true, automatically set `main` field. If a string is given, it will be the key instead of `"main"`.
+ * @property {boolean} [autoTypes=false] If true, automatically set `types` field.
+ * @property {boolean} [banner=true] If true, add license banner to ouput script.
+ * @property {boolean} [unicodeCopyright=true] If true, uses `©` instead of `(c)` in banner.
+ * @property {boolean} [productionOnly=true] If true, only applies changes and emits files in Webpack mode `production`.
+ * @property {string} [debugFolder=null] Directory where debug info files get written to.
+ * @property {boolean} [json5=false] If true, package output will be written with `json5.stringify` instead of `JSON.stringify`.
+ * @property {boolean} [autoExclude=false] If `true`, unneeded fields will be guessed and automatically excluded from output package.
+ * @property {string[]} [includeFields=[]] Field names that should forcefully be forwarded from `options.pkg` to generated pkg. For example, use `includeFields: ["babel"]` to include your Babel config in your output package.
+ * @property {string[]} [excludeFields=[]] Fields names that are never written to generated pkg.
+ */
+
+/**
+ * @class
+ */
+export default class {
+
+  /**
+   * @constructor
+   * @param {pluginOptions} [options] Plugin options
+   */
+  constructor(options) {
+    this.options = {
+      publishimo,
+      filename: "package.json",
+      format: false,
+      autoMain: true,
+      autoTypes: false,
+      banner: true,
+      unicodeCopyright: true,
+      productionOnly: true,
+      debugFolder: null,
+      incudeFields: [],
+      excludeFields: [],
+      json5: false,
+      autoExclude: false,
+      ...options,
+    }
+    if (this.options.format === true) {
+      this.options.format = 2
+    }
+  }
+
+  outputDebugFile(filename, data) {
+    if (!this.options.debugFolder) {
+      return
+    }
+    const outputPath = path.join(this.options.debugFolder, filename)
+    if (typeof data === "string") {
+      fss.outputFile(outputPath, data)
+    } else {
+      fss.outputJson5(outputPath, data, {space: 2})
+    }
+  }
+
+  apply(compiler) {
+    if (this.options.productionOnly &amp;&amp; compiler.options.mode !== "production") {
+      return
+    }
+    if (compiler.hooks[pkgHook]) {
+      throw new Error(`Webpack hook compiler.hooks.${pkgHook} is already registered`)
+    }
+    compiler.hooks[pkgHook] = new AsyncParallelHook(["publishimoResult"])
+    let publishimoResult
+    compiler.hooks.compilation.tap(webpackId, compilation => {
+      compilation.hooks.optimizeChunkAssets.tapPromise(webpackId, async chunks => {
+        const publishimoConfig = {
+          pkg: compiler.context,
+          ...this.options,
+        }
+        const chunkPath = path.join(compilation.outputOptions.path, compilation.chunks[0].files[0])
+        const mainPath = path.relative(compilation.outputOptions.path, chunkPath)
+        if (this.options.autoMain) {
+          const fieldKey = isString(this.options.autoMain) ? this.options.autoMain : "main"
+          publishimoConfig[fieldKey] = mainPath
+        }
+        if (this.options.autoTypes) {
+          publishimoConfig.types = mainPath
+        }
+        if (this.options.autoExclude &amp;&amp; compilation.options.target !== "node") { // Don't include dependencies in package.json if export target is not a Node module
+          publishimoConfig.excludeFields = [
+            ...publishimoConfig.excludeFields,
+            "dependencies",
+            "peerDependencies",
+            "optionalDependencies",
+          ]
+        }
+        publishimoResult = await this.options.publishimo(publishimoConfig)
+        this.outputDebugFile("options.json5", this.options)
+        this.outputDebugFile("publishimoResult.json5", publishimoResult)
+        compiler.hooks[pkgHook].promise(publishimoResult)
+        if (this.options.banner) {
+          const banner = do {
+            if (this.options.banner === true) {
+              generateBanner(publishimoResult.generatedPkg, this.options)
+            } else if (typeof this.options.banner === "function") {
+              this.options.banner(publishimoResult.generatedPkg)
+            } else if (typeof this.options.banner === "string") {
+              this.options.banner
+            } else {
+              "?"
+            }
+          }
+          const finalBanner = formatBanner(banner)
+          this.outputDebugFile("banner.js", finalBanner)
+          for (const chunk of chunks) {
+            for (const file of chunk.files) {
+              compilation.assets[file] = new ConcatSource(finalBanner, "\n", compilation.assets[file])
+            }
+          }
+        }
+      })
+    })
+    compiler.hooks.emit.tap(webpackId, compilation => {
+      const fileContents = (this.options.json5 ? json5 : JSON).stringify(publishimoResult.generatedPkg, null, this.options.format || 0)
+      compilation.assets[this.options.filename] = {
+        source: () => fileContents,
+        size: () => fileContents.length,
+      }
+    })
+  }
+
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+<footer class="footer">
+    <div class="content has-text-centered">
+        <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Mar 08 2019 02:57:18 GMT+0000 (Coordinated Universal Time)</p>
+        <p class="sidebar-created-by">
+            <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+            <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers</a>
+        </p>
+    </div>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/app.min.js"></script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
