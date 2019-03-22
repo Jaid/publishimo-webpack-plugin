@@ -4,7 +4,7 @@
   "author": "Jaid <jaid.jsx@gmail.com> (https://github.com/Jaid)",
   "dependencies": {
     "@absolunet/fss": "^1.6.0",
-    "@babel/runtime": "^7.3.4",
+    "@babel/runtime": "^7.4.2",
     "json5": "^2.1.0",
     "publishimo": "^5.0.1",
     "stringify-author": "^0.1.3"
