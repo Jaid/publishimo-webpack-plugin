@@ -3,7 +3,7 @@ import path from "path"
 import webpack from "webpack"
 import pify from "pify"
 import loadJsonFile from "load-json-file"
-import CleanWebpackPlugin from "clean-webpack-plugin"
+import {CleanWebpackPlugin} from "clean-webpack-plugin"
 
 const indexModule = (process.env.MAIN ? path.resolve(process.env.MAIN) : path.join(__dirname, "..", "src")) |> require
 const {default: PublishimoWebpackPlugin} = indexModule
