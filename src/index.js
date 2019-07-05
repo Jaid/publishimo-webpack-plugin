@@ -8,6 +8,8 @@ import {isString} from "lodash"
 import {AsyncParallelHook} from "tapable"
 import fss from "@absolunet/fss"
 import json5 from "json5"
+import ensureArray from "ensure-array"
+import arrayToObjectKeys from "array-to-object-keys"
 
 import generateBanner from "./generateBanner"
 import formatBanner from "./formatBanner"
@@ -31,6 +33,7 @@ const pkgHook = "publishimoGeneratedPkg"
  * @property {boolean} [autoExclude=false] If `true`, unneeded fields will be guessed and automatically excluded from output package.
  * @property {string[]} [includeFields=[]] Field names that should forcefully be forwarded from `options.pkg` to generated pkg. For example, use `includeFields: ["babel"]` to include your Babel config in your output package.
  * @property {string[]} [excludeFields=[]] Fields names that are never written to generated pkg.
+ * @property {string[]} [binNames]
  */
 
 /**
@@ -48,6 +51,7 @@ export default class {
       filename: "package.json",
       format: false,
       autoMain: true,
+      binNames: [],
       autoTypes: false,
       banner: true,
       unicodeCopyright: true,
@@ -95,7 +99,13 @@ export default class {
         const mainPath = path.relative(compilation.outputOptions.path, chunkPath)
         if (this.options.autoMain) {
           const fieldKey = isString(this.options.autoMain) ? this.options.autoMain : "main"
-          publishimoConfig[fieldKey] = mainPath
+          if (fieldKey === "bin" && this.options.binNames) {
+            const binNames = ensureArray(this.options.binNames)
+            const binObject = arrayToObjectKeys(binNames, mainPath)
+            publishimoConfig.bin = binObject
+          } else {
+            publishimoConfig[fieldKey] = mainPath
+          }
         }
         if (this.options.autoTypes) {
           publishimoConfig.types = mainPath
