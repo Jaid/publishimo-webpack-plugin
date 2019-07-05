@@ -68,3 +68,31 @@ it("should run with configuration", async () => {
   expect(output).toMatchObject(pkg)
   expect(output.main).toBe("out/main.js")
 })
+
+it("should run for cli output", async () => {
+  const pkg = {
+    license: "Apache 2",
+    name: "configured",
+    version: "1.2.3",
+  }
+  const webpackConfig = {
+    ...getWepbackConfig("cli"),
+    output: {
+      path: path.join(__dirname, "cli", "dist"),
+      filename: "out/[name].js",
+    },
+    plugins: [
+      new CleanWebpackPlugin,
+      new PublishimoWebpackPlugin({
+        pkg,
+        debugFolder: path.join(__dirname, "cli", "dist", "debug"),
+        filename: "pkg.json",
+        binNames: ["cli", "bin"],
+        autoMain: "bin",
+      }),
+    ],
+  }
+  await pify(webpack)(webpackConfig)
+  const output = await loadJsonFile(path.join(__dirname, "cli", "dist", "pkg.json"))
+  expect(output).toMatchObject(pkg)
+})
