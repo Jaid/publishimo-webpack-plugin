@@ -51,7 +51,6 @@ export default class {
       filename: "package.json",
       format: false,
       autoMain: true,
-      binNames: [],
       autoTypes: false,
       banner: true,
       unicodeCopyright: true,
