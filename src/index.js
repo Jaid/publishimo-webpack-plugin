@@ -33,7 +33,7 @@ const pkgHook = "publishimoGeneratedPkg"
  * @property {boolean} [autoExclude=false] If `true`, unneeded fields will be guessed and automatically excluded from output package.
  * @property {string[]} [includeFields=[]] Field names that should forcefully be forwarded from `options.pkg` to generated pkg. For example, use `includeFields: ["babel"]` to include your Babel config in your output package.
  * @property {string[]} [excludeFields=[]] Fields names that are never written to generated pkg.
- * @property {string[]} [binNames]
+ * @property {string[]} [binName]
  */
 
 /**
