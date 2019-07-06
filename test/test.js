@@ -72,7 +72,7 @@ it("should run with configuration", async () => {
 it("should run for cli output", async () => {
   const pkg = {
     license: "Apache 2",
-    name: "configured",
+    name: "my-cli-package",
     version: "1.2.3",
   }
   const webpackConfig = {
@@ -87,7 +87,7 @@ it("should run for cli output", async () => {
         pkg,
         debugFolder: path.join(__dirname, "cli", "dist", "debug"),
         filename: "pkg.json",
-        binNames: ["cli", "bin"],
+        binName: ["cli", "bin"],
         autoMain: "bin",
       }),
     ],

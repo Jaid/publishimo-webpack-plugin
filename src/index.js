@@ -4,12 +4,13 @@ import path from "path"
 
 import publishimo from "publishimo"
 import {ConcatSource} from "webpack-sources"
-import {isString} from "lodash"
+import {isString, isObject} from "lodash"
 import {AsyncParallelHook} from "tapable"
 import fss from "@absolunet/fss"
 import json5 from "json5"
 import ensureArray from "ensure-array"
 import arrayToObjectKeys from "array-to-object-keys"
+import sortKeys from "sort-keys"
 
 import generateBanner from "./generateBanner"
 import formatBanner from "./formatBanner"
@@ -34,6 +35,7 @@ const pkgHook = "publishimoGeneratedPkg"
  * @property {string[]} [includeFields=[]] Field names that should forcefully be forwarded from `options.pkg` to generated pkg. For example, use `includeFields: ["babel"]` to include your Babel config in your output package.
  * @property {string[]} [excludeFields=[]] Fields names that are never written to generated pkg.
  * @property {string[]} [binName]
+ * @property {boolean} [includeDefaultBinName=true]
  */
 
 /**
@@ -60,6 +62,7 @@ export default class {
       excludeFields: [],
       json5: false,
       autoExclude: false,
+      includeDefaultBinName: true,
       ...options,
     }
     if (this.options.format === true) {
@@ -98,8 +101,8 @@ export default class {
         const mainPath = path.relative(compilation.outputOptions.path, chunkPath)
         if (this.options.autoMain) {
           const fieldKey = isString(this.options.autoMain) ? this.options.autoMain : "main"
-          if (fieldKey === "bin" && this.options.binNames) {
-            const binNames = ensureArray(this.options.binNames)
+          if (fieldKey === "bin" && this.options.binName) {
+            const binNames = ensureArray(this.options.binName)
             const binObject = arrayToObjectKeys(binNames, mainPath)
             publishimoConfig.bin = binObject
           } else {
@@ -118,6 +121,10 @@ export default class {
           ]
         }
         publishimoResult = await this.options.publishimo(publishimoConfig)
+        if (this.options.includeDefaultBinName && publishimoResult.generatedPkg.bin |> isObject) {
+          publishimoResult.generatedPkg.bin[publishimoResult.generatedPkg.name] = mainPath
+          publishimoResult.generatedPkg.bin = publishimoResult.generatedPkg.bin |> sortKeys
+        }
         this.outputDebugFile("options.json5", this.options)
         this.outputDebugFile("publishimoResult.json5", publishimoResult)
         compiler.hooks[pkgHook].promise(publishimoResult)
