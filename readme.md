@@ -1,3 +1,3 @@
-# webpack-plugin-publishimo
+## publishimo-webpack-plugin
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/Jaid/publishimo-webpack-plugin.svg)](https://greenkeeper.io/)
+
