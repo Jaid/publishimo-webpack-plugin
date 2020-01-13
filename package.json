@@ -41,5 +41,6 @@
     "prepareActionJest": "npm run build:prod"
   },
   "name": "publishimo-webpack-plugin",
-  "description": "Webpack plugin that creates a publishimo-enhanced package.json in the output folder."
+  "description": "Webpack plugin that creates a publishimo-enhanced package.json in the output folder.",
+  "funding": "https://github.com/sponsors/jaid"
 }
