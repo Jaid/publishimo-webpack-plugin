@@ -9,7 +9,7 @@ const {default: PublishimoWebpackPlugin} = indexModule
 
 jest.setTimeout(60 * 1000)
 
-const getWepbackConfig = name => ({
+const getWebpackConfig = name => ({
   target: "node",
   mode: "production",
   devtool: "inline-source-map",
@@ -22,7 +22,7 @@ const getWepbackConfig = name => ({
 
 it("should run", async () => {
   const webpackConfig = {
-    ...getWepbackConfig("basic"),
+    ...getWebpackConfig("basic"),
     plugins: [
       new CleanWebpackPlugin,
       new PublishimoWebpackPlugin,
@@ -44,7 +44,7 @@ it("should run with configuration", async () => {
     version: "1.2.3",
   }
   const webpackConfig = {
-    ...getWepbackConfig("configured"),
+    ...getWebpackConfig("configured"),
     output: {
       path: path.join(__dirname, "configured", "dist"),
       filename: "out/[name].js",
@@ -75,7 +75,7 @@ it("should run for cli output", async () => {
     version: "1.2.3",
   }
   const webpackConfig = {
-    ...getWepbackConfig("cli"),
+    ...getWebpackConfig("cli"),
     output: {
       path: path.join(__dirname, "cli", "dist"),
       filename: "out/[name].js",
