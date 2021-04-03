@@ -1,22 +1,21 @@
 /** @module publishimo-webpack-plugin */
 
-import path from "path"
-
-import publishimo from "publishimo"
-import {ConcatSource} from "webpack-sources"
-import {isString, isObject} from "lodash"
-import {AsyncParallelHook} from "tapable"
 import fss from "@absolunet/fss"
-import json5 from "json5"
-import ensureArray from "ensure-array"
 import arrayToObjectKeys from "array-to-object-keys"
+import ensureArray from "ensure-array"
+import json5 from "json5"
+import {isObject, isString} from "lodash"
+import path from "path"
+import publishimo from "publishimo"
 import sortKeys from "sort-keys"
+import {AsyncParallelHook} from "tapable"
+import {ConcatSource} from "webpack-sources"
 
-import generateBanner from "./generateBanner"
 import formatBanner from "./formatBanner"
+import generateBanner from "./generateBanner"
 
 const webpackId = "PublishimoWebpackPlugin"
-const pkgHook = "publishimoGeneratedPkg"
+const hookName = "publishimoGeneratedPkg"
 
 /**
  * @typedef pluginOptions
@@ -41,7 +40,9 @@ const pkgHook = "publishimoGeneratedPkg"
 /**
  * @class
  */
-export default class {
+export default class PublishimoWebpackPlugin {
+
+  static hooksMap = new WeakMap;
 
   /**
    * @constructor
@@ -86,10 +87,6 @@ export default class {
     if (this.options.productionOnly && compiler.options.mode !== "production") {
       return
     }
-    if (compiler.hooks[pkgHook]) {
-      throw new Error(`Webpack hook compiler.hooks.${pkgHook} is already registered`)
-    }
-    compiler.hooks[pkgHook] = new AsyncParallelHook(["publishimoResult"])
     let publishimoResult
     compiler.hooks.compilation.tap(webpackId, compilation => {
       compilation.hooks.optimizeChunkAssets.tapPromise(webpackId, async chunks => {
@@ -121,9 +118,9 @@ export default class {
           ]
         }
         publishimoResult = await this.options.publishimo(publishimoConfig)
-        if (this.options.includeDefaultBinName && publishimoResult.generatedPkg.bin |> isObject) {
+        if (this.options.includeDefaultBinName && isObject(publishimoResult.generatedPkg.bin)) {
           publishimoResult.generatedPkg.bin[publishimoResult.generatedPkg.name] = mainPath
-          publishimoResult.generatedPkg.bin = publishimoResult.generatedPkg.bin |> sortKeys
+          publishimoResult.generatedPkg.bin = sortKeys(publishimoResult.generatedPkg.bin)
         }
         this.outputDebugFile("options.json5", this.options)
         this.outputDebugFile("publishimoResult.json5", publishimoResult)
@@ -157,6 +154,22 @@ export default class {
         size: () => fileContents.length,
       }
     })
+  }
+
+  // Thanks to https://github.com/jantimon/html-webpack-plugin/blob/0a6568d587a82d88fd3a0617234ca98d26a1e0a6/lib/hooks.js#L79
+  static getHooks(compilation) {
+    let hooks = this.hooksMap.get(compilation)
+    if (!hooks) {
+      hooks = PublishimoWebpackPlugin.createHooks()
+      PublishimoWebpackPlugin.hooksMap.set(compilation, hooks)
+    }
+    return hooks
+  }
+
+  static createHooks() {
+    return {
+      [hookName]: new AsyncParallelHook(["publishimoResult"]),
+    }
   }
 
 }
