@@ -127,20 +127,20 @@ export default class {
         }
         this.outputDebugFile("options.json5", this.options)
         this.outputDebugFile("publishimoResult.json5", publishimoResult)
-        compiler.hooks[pkgHook].promise(publishimoResult)
+        PublishimoWebpackPlugin.getHooks(compilation)[hookName].promise(publishimoResult)
         if (this.options.banner) {
-          const banner = do {
+          const getBanner = () => {
             if (this.options.banner === true) {
-              generateBanner(publishimoResult.generatedPkg, this.options)
+              return generateBanner(publishimoResult.generatedPkg, this.options)
             } else if (typeof this.options.banner === "function") {
-              this.options.banner(publishimoResult.generatedPkg)
+              return this.options.banner(publishimoResult.generatedPkg)
             } else if (typeof this.options.banner === "string") {
-              this.options.banner
+              return this.options.banner
             } else {
-              "?"
+              return "?"
             }
           }
-          const finalBanner = formatBanner(banner)
+          const finalBanner = formatBanner(getBanner())
           this.outputDebugFile("banner.js", finalBanner)
           for (const chunk of chunks) {
             for (const file of chunk.files) {
