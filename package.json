@@ -23,7 +23,7 @@
     "load-json-file": "^6.2.0",
     "pify": "^5.0.0",
     "rimraf": "^3.0.2",
-    "webpack": "^5.30.0",
+    "webpack": "^4",
     "webpack-config-jaid": "^11.13.0"
   },
   "scripts": {
