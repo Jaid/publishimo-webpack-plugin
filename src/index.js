@@ -9,12 +9,13 @@ import path from "path"
 import publishimo from "publishimo"
 import sortKeys from "sort-keys"
 import {AsyncParallelHook} from "tapable"
+import webpack from "webpack"
 import {ConcatSource} from "webpack-sources"
 
 import formatBanner from "./formatBanner"
 import generateBanner from "./generateBanner"
 
-const webpackId = "PublishimoWebpackPlugin"
+const webpackId = process.env.REPLACE_PKG_NAME
 const hookName = "publishimoGeneratedPkg"
 
 /**
@@ -88,8 +89,12 @@ export default class PublishimoWebpackPlugin {
       return
     }
     let publishimoResult
+    const processAssetsTapIdentifier = {
+      name: webpackId,
+      stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS,
+    }
     compiler.hooks.compilation.tap(webpackId, compilation => {
-      compilation.hooks.optimizeChunkAssets.tapPromise(webpackId, async chunks => {
+      compilation.hooks.processAssets.tapPromise(processAssetsTapIdentifier, async () => {
         const publishimoConfig = {
           pkg: compiler.context,
           ...this.options,
@@ -139,9 +144,9 @@ export default class PublishimoWebpackPlugin {
           }
           const finalBanner = formatBanner(getBanner())
           this.outputDebugFile("banner.js", finalBanner)
-          for (const chunk of chunks) {
-            for (const file of chunk.files) {
-              compilation.assets[file] = new ConcatSource(finalBanner, "\n", compilation.assets[file])
+          for (const chunk of compilation.chunks) {
+            for (const chunkFile of chunk.files) {
+              compilation.updateAsset(chunkFile, source => new ConcatSource(finalBanner, "\n", source))
             }
           }
         }
