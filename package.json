@@ -64,5 +64,6 @@
     "webpack-minify",
     "webpack-optimize",
     "webpack-plugin"
-  ]
+  ],
+  "type": "module"
 }
